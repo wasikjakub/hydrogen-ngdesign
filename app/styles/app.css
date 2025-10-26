@@ -8,6 +8,14 @@
   --color-light: #fff;
 }
 
+/* Load IBM Plex Mono from Google Fonts for the whole site */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap');
+
+/* Apply IBM Plex Mono globally */
+body {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
 img {
   border-radius: 4px;
 }
@@ -169,9 +177,8 @@ button.reset:hover:not(:has(> *)) {
   justify-content: space-between;
   height: var(--header-height);
   padding: 0 2rem;
-  position: sticky;
-  top: 0;
-  z-index: 1;
+  position: relative; /* header stays at top of flow and will not follow scroll */
+  width: 100%;
 }
 
 .header-left-nav {
@@ -191,10 +198,24 @@ button.reset:hover:not(:has(> *)) {
   color: var(--color-dark);
 }
 
+/* Site logo sizing inside the header */
+.site-logo,
+.header-logo img {
+  height: 130px; /* adjust this to make logo bigger/smaller */
+  width: auto;
+  display: block;
+}
+
 .header-right {
   display: flex;
   gap: 2rem;
   align-items: center;
+}
+
+/* ensure page content isn't hidden under fixed header */
+main {
+  /* Header is not fixed anymore, no top padding required. Set to 0. */
+  padding-top: 0;
 }
 
 .nav-link {
@@ -228,18 +249,17 @@ button.reset:hover:not(:has(> *)) {
 */
 .footer {
   margin-top: auto;
-  padding: 4rem 1rem 1rem;
+  padding: 4rem 2rem 1rem; /* match header horizontal padding */
   color: var(--color-dark);
   width: 100%;
-  max-width: 1400px;
-  margin-left: auto;
-  margin-right: auto;
+  box-sizing: border-box;
 }
 
 .footer-content {
   display: flex;
   flex-direction: column;
   gap: 3rem;
+  width: 100%;
 }
 
 .footer-top {
@@ -664,16 +684,37 @@ button.reset:hover:not(:has(> *)) {
 .regulamin-page {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 4rem 1rem;
+  /* Reduced padding to make margins smaller on the regulamin page. */
+  /* To change margins: edit the horizontal value (second) below or the .regulamin-content max-width. */
+  padding: 2rem 1rem;
   min-height: calc(100vh - var(--header-height) - 400px); /* Adjust for header and footer height */
 }
 
 .regulamin-content {
-  max-width: 800px;
+  /* Controls the readable column width for the regulamin text.
+     To make margins smaller, reduce this max-width (e.g. 700px) or increase it to widen the text area. */
+  max-width: 720px;
   margin: 0 auto;
+  padding: 0 0.5rem; /* small inner padding for mobile */
   font-size: 1rem;
   line-height: 1.6;
   color: var(--color-dark);
+}
+
+/* If the raw HTML includes a .container element, it may add its own spacing.
+   You can adjust/remove it here if you want zero extra margins inside the regulamin content. */
+.regulamin-content .container {
+  padding: 0;
+  margin: 0;
+}
+
+/* Regulamin-specific heading styles: reduce weight only on the regulamin page */
+.regulamin-page header h1,
+.regulamin-page header h2,
+.regulamin-content h1,
+.regulamin-content h2,
+.regulamin-content h3 {
+  font-weight: 400; /* use normal weight (400) — available via imported IBM Plex Mono */
 }
 
 .placeholder-text {
@@ -735,3 +776,86 @@ button.reset:hover:not(:has(> *)) {
   gap: 0.75rem;
   flex-wrap: wrap;
 }
+
+/* ------------------------------------------------------------------
+   Additional regulamin-specific tweaks
+   These are safe, scoped adjustments for the raw HTML at
+   app/assets/regulamin.html. Change the `max-width` and `padding`
+   values below to make the regulamin area narrower/wider or to
+   increase/reduce white space.
+   ------------------------------------------------------------------ */
+
+/* Ensure the `.container` inside the raw HTML is constrained when the
+   route wraps the HTML in `.regulamin-page` or `.regulamin-content`. */
+.regulamin-page .container,
+.regulamin-content.container {
+  max-width: 800px; /* change this to 650/800px to taste */
+  margin: 0 auto;
+  padding: 0; /* remove extra container padding inside the regulamin */
+  box-sizing: border-box;
+}
+
+/* Slightly tighter heading spacing for the legal text */
+.regulamin-content h1,
+.regulamin-content h2,
+.regulamin-content h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.6rem;
+  line-height: 1.15;
+}
+
+.regulamin-content p,
+.regulamin-content li {
+  margin-bottom: 0.75rem;
+}
+
+/* Responsive tweaks: reduce padding and font-size slightly on small screens */
+@media (max-width: 640px) {
+  .regulamin-page {
+    padding: 1.25rem 0.75rem;
+  }
+
+  .regulamin-content {
+    padding: 0 0.75rem;
+    font-size: 15px;
+  }
+
+  .regulamin-content h1 { font-size: 1.5rem; }
+  .regulamin-content h2 { font-size: 1.15rem; }
+}
+
+/* Print-friendly: use full width on paper and reduce large spacing */
+@media print {
+  .regulamin-page,
+  .regulamin-content,
+  .regulamin-page .container {
+    max-width: 100% !important;
+    padding: 1rem !important;
+    color: #000;
+  }
+
+  /* Avoid page-breaks inside headings/lists where possible */
+  .regulamin-content h1,
+  .regulamin-content h2,
+  .regulamin-content h3,
+  .regulamin-content p {
+    page-break-inside: avoid;
+  }
+}
+
+/* Stronger enforcement: make regulamin fragment constrained even if other rules
+   interfere. Use this to debug/force sizes; change the 720px value to taste. */
+.regulamin-page .regulamin-content,
+.regulamin-page .regulamin-content > .container,
+.regulamin-content > .container {
+  max-width: 1800px !important; /* change this to 650/800px to test */
+  width: 100% !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  box-sizing: border-box !important;
+}
+
+/* Visual debug helper (remove later): uncomment to see the constrained box */
+/* .regulamin-page .regulamin-content { outline: 1px dashed rgba(0,0,0,0.08); } */
+
+

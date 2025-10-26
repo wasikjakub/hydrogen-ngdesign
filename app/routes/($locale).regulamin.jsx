@@ -1,23 +1,19 @@
-import {PageLayout} from '~/components/PageLayout';
+import regulaminHtml from "../assets/regulamin.html?raw";
 
 export default function RegulaminPage() {
   return (
-    <PageLayout>
-      <div className="regulamin-page">
-        <div className="regulamin-content">
-          {/* Place your content here */}
-          <div className="placeholder-text">
-            [MIEJSCE NA TREŚĆ REGULAMINU I POLITYKI PRYWATNOŚCI]
-          </div>
-        </div>
-      </div>
-    </PageLayout>
+    <div className="regulamin-page">
+      <div
+        className="regulamin-content"
+        dangerouslySetInnerHTML={{ __html: regulaminHtml }}
+      />
+    </div>
   );
 }
 
 export function meta() {
   return [
-    {title: 'Regulamin i Polityka Prywatności | NG Design'},
-    {description: 'Regulamin i polityka prywatności NG Design'},
+    { title: 'Regulamin i Polityka Prywatności | NG Design' },
+    { description: 'Regulamin i polityka prywatności NG Design' },
   ];
 }

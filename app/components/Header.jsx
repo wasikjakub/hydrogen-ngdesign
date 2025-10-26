@@ -1,12 +1,11 @@
-import {Suspense} from 'react';
-import {Await, NavLink, useAsyncValue} from 'react-router';
-import {useAnalytics, useOptimisticCart} from '@shopify/hydrogen';
+import {NavLink} from 'react-router';
 import {useAside} from '~/components/Aside';
+import logoUrl from '../assets/logo.png';
 
 /**
  * @param {HeaderProps}
  */
-export function Header({header, isLoggedIn, cart}) {
+export function Header({header}) {
   const {shop} = header;
   return (
     <header className="header">
@@ -24,13 +23,13 @@ export function Header({header, isLoggedIn, cart}) {
 
       <div className="header-logo">
         <NavLink prefetch="intent" to="/">
-          <strong>{shop.name}</strong>
+          <img src={logoUrl} alt={shop?.name || 'NG Design'} className="site-logo" />
         </NavLink>
       </div>
 
       <div className="header-right">
         <button className="language-toggle">EN PL</button>
-        <CartToggle cart={cart} />
+        {/* Cart toggle hidden for now per request */}
       </div>
     </header>
   );
@@ -94,91 +93,14 @@ export function HeaderMenu({
   );
 }
 
-/**
- * @param {Pick<HeaderProps, 'isLoggedIn' | 'cart'>}
- */
-function HeaderCtas({isLoggedIn, cart}) {
-  return (
-    <nav className="header-ctas" role="navigation">
-      <HeaderMenuMobileToggle />
-      <NavLink prefetch="intent" to="/account" style={activeLinkStyle}>
-        <Suspense fallback="Sign in">
-          <Await resolve={isLoggedIn} errorElement="Sign in">
-            {(isLoggedIn) => (isLoggedIn ? 'Account' : 'Sign in')}
-          </Await>
-        </Suspense>
-      </NavLink>
-      <SearchToggle />
-      <CartToggle cart={cart} />
-    </nav>
-  );
-}
+/** Header CTAs were removed; Cart toggle is used directly in the Header component. */
 
-function HeaderMenuMobileToggle() {
-  const {open} = useAside();
-  return (
-    <button
-      className="header-menu-mobile-toggle reset"
-      onClick={() => open('mobile')}
-    >
-      <h3>☰</h3>
-    </button>
-  );
-}
-
-function SearchToggle() {
-  const {open} = useAside();
-  return (
-    <button className="reset" onClick={() => open('search')}>
-      Search
-    </button>
-  );
-}
+// Mobile toggle and search toggle were removed because header layout uses simplified controls.
 
 /**
  * @param {{count: number | null}}
  */
-function CartBadge({count}) {
-  const {open} = useAside();
-  const {publish, shop, cart, prevCart} = useAnalytics();
-
-  return (
-    <a
-      href="/cart"
-      onClick={(e) => {
-        e.preventDefault();
-        open('cart');
-        publish('cart_viewed', {
-          cart,
-          prevCart,
-          shop,
-          url: window.location.href || '',
-        });
-      }}
-    >
-      Cart {count === null ? <span>&nbsp;</span> : count}
-    </a>
-  );
-}
-
-/**
- * @param {Pick<HeaderProps, 'cart'>}
- */
-function CartToggle({cart}) {
-  return (
-    <Suspense fallback={<CartBadge count={null} />}>
-      <Await resolve={cart}>
-        <CartBanner />
-      </Await>
-    </Suspense>
-  );
-}
-
-function CartBanner() {
-  const originalCart = useAsyncValue();
-  const cart = useOptimisticCart(originalCart);
-  return <CartBadge count={cart?.totalQuantity ?? 0} />;
-}
+/* Cart UI (badge/toggle) removed from header per request. */
 
 const FALLBACK_HEADER_MENU = {
   id: 'gid://shopify/Menu/199655587896',
