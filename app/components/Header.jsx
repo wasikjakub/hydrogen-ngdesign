@@ -6,20 +6,32 @@ import {useAside} from '~/components/Aside';
 /**
  * @param {HeaderProps}
  */
-export function Header({header, isLoggedIn, cart, publicStoreDomain}) {
-  const {shop, menu} = header;
+export function Header({header, isLoggedIn, cart}) {
+  const {shop} = header;
   return (
     <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
-      </NavLink>
-      <HeaderMenu
-        menu={menu}
-        viewport="desktop"
-        primaryDomainUrl={header.shop.primaryDomain.url}
-        publicStoreDomain={publicStoreDomain}
-      />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+      <nav className="header-left-nav">
+        <NavLink prefetch="intent" to="/collections" className="nav-link">
+          Sklep
+        </NavLink>
+        <NavLink prefetch="intent" to="/pages/about" className="nav-link">
+          O Nas
+        </NavLink>
+        <NavLink prefetch="intent" to="/pages/contact" className="nav-link">
+          Kontakt
+        </NavLink>
+      </nav>
+
+      <div className="header-logo">
+        <NavLink prefetch="intent" to="/">
+          <strong>{shop.name}</strong>
+        </NavLink>
+      </div>
+
+      <div className="header-right">
+        <button className="language-toggle">EN PL</button>
+        <CartToggle cart={cart} />
+      </div>
     </header>
   );
 }

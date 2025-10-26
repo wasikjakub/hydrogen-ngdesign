@@ -1,26 +1,54 @@
-import {Suspense} from 'react';
-import {Await, NavLink} from 'react-router';
-
 /**
- * @param {FooterProps}
+ * Footer component displaying contact information, links, and social media icons
  */
-export function Footer({footer: footerPromise, header, publicStoreDomain}) {
+export function Footer() {
   return (
-    <Suspense>
-      <Await resolve={footerPromise}>
-        {(footer) => (
-          <footer className="footer">
-            {footer?.menu && header.shop.primaryDomain?.url && (
-              <FooterMenu
-                menu={footer.menu}
-                primaryDomainUrl={header.shop.primaryDomain.url}
-                publicStoreDomain={publicStoreDomain}
-              />
-            )}
-          </footer>
-        )}
-      </Await>
-    </Suspense>
+    <footer className="footer">
+      <div className="footer-content">
+        <div className="footer-top">
+          <div className="footer-top-content">
+            <div className="footer-contact">
+              <div className="footer-contact">
+                <h3>TELEFON</h3>
+                <p>+48 511 677 442</p>
+              </div>
+              <div className="footer-contact">
+                <h3>E-MAIL</h3>
+                <p>KRZYSZTOF@NGDESIGN.COM</p>
+              </div>
+            </div>
+            <div className="footer-slogan">
+              WE CREATE FURNITURE<br />
+              YOU DREAM OF.
+            </div>
+          </div>
+        </div>
+        
+        <div className="footer-bottom">
+          <div className="footer-copyright">
+            © NG DESIGN {new Date().getFullYear()}
+          </div>
+          <div className="footer-links">
+            <a href="/regulamin">REGULAMIN I POLITYKA PRYWATNOŚCI</a>
+            <a href="/dla-architektow">DLA ARCHITEKTÓW</a>
+            <a href="/dostawa">DOSTAWA I ZWROTY</a>
+          </div>
+
+          <div className="footer-social">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <svg className="social-icon" viewBox="0 0 24 24">
+                <path d="M12 8.4A3.6 3.6 0 0 0 8.4 12a3.6 3.6 0 0 0 3.6 3.6 3.6 3.6 0 0 0 3.6-3.6A3.6 3.6 0 0 0 12 8.4zm0 6a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8zm4.8-6.2a.8.8 0 1 1-1.6 0 .8.8 0 0 1 1.6 0zm2.4.8c0-.8-.2-1.6-.5-2.3A3 3 0 0 0 17 5a4.3 4.3 0 0 0-2.3-.5c-1-.1-3.8-.1-4.8 0-.8 0-1.6.2-2.3.5a3 3 0 0 0-1.7 1.7 4.3 4.3 0 0 0-.5 2.3c-.1 1-.1 3.8 0 4.8 0 .8.2 1.6.5 2.3a3 3 0 0 0 1.7 1.7c.7.3 1.5.5 2.3.5 1 .1 3.8.1 4.8 0 .8 0 1.6-.2 2.3-.5a3 3 0 0 0 1.7-1.7c.3-.7.5-1.5.5-2.3.1-1 .1-3.8 0-4.8zM17.6 16a2.4 2.4 0 0 1-1.4 1.4c-1 .4-3.2.3-4.2.3-1 0-3.3.1-4.2-.3A2.4 2.4 0 0 1 6.4 16c-.4-1-.3-3.2-.3-4.2 0-1-.1-3.3.3-4.2A2.4 2.4 0 0 1 7.8 6.4c1-.4 3.2-.3 4.2-.3 1 0 3.3-.1 4.2.3a2.4 2.4 0 0 1 1.4 1.4c.4 1 .3 3.2.3 4.2 0 1 .1 3.3-.3 4.2z"/>
+              </svg>
+            </a>
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <svg className="social-icon" viewBox="0 0 24 24">
+                <path d="M14 13.5h2.5l1-4H14v-2c0-1.03 0-2 2-2h1.5V2.14c-.326-.043-1.557-.14-2.857-.14C11.928 2 10 3.657 10 6.7v2.8H7v4h3V22h4v-8.5z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }
 
@@ -31,100 +59,4 @@ export function Footer({footer: footerPromise, header, publicStoreDomain}) {
  *   publicStoreDomain: string;
  * }}
  */
-function FooterMenu({menu, primaryDomainUrl, publicStoreDomain}) {
-  return (
-    <nav className="footer-menu" role="navigation">
-      {(menu || FALLBACK_FOOTER_MENU).items.map((item) => {
-        if (!item.url) return null;
-        // if the url is internal, we strip the domain
-        const url =
-          item.url.includes('myshopify.com') ||
-          item.url.includes(publicStoreDomain) ||
-          item.url.includes(primaryDomainUrl)
-            ? new URL(item.url).pathname
-            : item.url;
-        const isExternal = !url.startsWith('/');
-        return isExternal ? (
-          <a href={url} key={item.id} rel="noopener noreferrer" target="_blank">
-            {item.title}
-          </a>
-        ) : (
-          <NavLink
-            end
-            key={item.id}
-            prefetch="intent"
-            style={activeLinkStyle}
-            to={url}
-          >
-            {item.title}
-          </NavLink>
-        );
-      })}
-    </nav>
-  );
-}
 
-const FALLBACK_FOOTER_MENU = {
-  id: 'gid://shopify/Menu/199655620664',
-  items: [
-    {
-      id: 'gid://shopify/MenuItem/461633060920',
-      resourceId: 'gid://shopify/ShopPolicy/23358046264',
-      tags: [],
-      title: 'Privacy Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/privacy-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633093688',
-      resourceId: 'gid://shopify/ShopPolicy/23358013496',
-      tags: [],
-      title: 'Refund Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/refund-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633126456',
-      resourceId: 'gid://shopify/ShopPolicy/23358111800',
-      tags: [],
-      title: 'Shipping Policy',
-      type: 'SHOP_POLICY',
-      url: '/policies/shipping-policy',
-      items: [],
-    },
-    {
-      id: 'gid://shopify/MenuItem/461633159224',
-      resourceId: 'gid://shopify/ShopPolicy/23358079032',
-      tags: [],
-      title: 'Terms of Service',
-      type: 'SHOP_POLICY',
-      url: '/policies/terms-of-service',
-      items: [],
-    },
-  ],
-};
-
-/**
- * @param {{
- *   isActive: boolean;
- *   isPending: boolean;
- * }}
- */
-function activeLinkStyle({isActive, isPending}) {
-  return {
-    fontWeight: isActive ? 'bold' : undefined,
-    color: isPending ? 'grey' : 'white',
-  };
-}
-
-/**
- * @typedef {Object} FooterProps
- * @property {Promise<FooterQuery|null>} footer
- * @property {HeaderQuery} header
- * @property {string} publicStoreDomain
- */
-
-/** @typedef {import('storefrontapi.generated').FooterQuery} FooterQuery */
-/** @typedef {import('storefrontapi.generated').HeaderQuery} HeaderQuery */
