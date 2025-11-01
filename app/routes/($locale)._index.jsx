@@ -2,6 +2,9 @@ import {Await, useLoaderData, Link} from 'react-router';
 import {Suspense} from 'react';
 import {Image} from '@shopify/hydrogen';
 import {ProductItem} from '~/components/ProductItem';
+import {FeaturedProducts} from '~/components/FeaturedProducts';
+import {CompanyLogos} from '~/components/SlidingLogos';
+import {FEATURED_PRODUCTS_QUERY, COMPANY_LOGOS_QUERY} from '~/lib/fragments';
 
 /**
  * @type {Route.MetaFunction}
@@ -29,13 +32,22 @@ export async function loader(args) {
  * @param {Route.LoaderArgs}
  */
 async function loadCriticalData({context}) {
-  const [{collections}] = await Promise.all([
+  const [{collections}, {products: featuredProducts}, companyLogos] = await Promise.all([
     context.storefront.query(FEATURED_COLLECTION_QUERY),
+    context.storefront.query(FEATURED_PRODUCTS_QUERY),
+    context.storefront.query(COMPANY_LOGOS_QUERY, {
+      variables: {
+        mentionedHandle: 'mentioned-logos-rrrsubfh',
+        partnerHandle: 'partner-logos-fccgdtgo', // Zmień na prawdziwy handle z Shopify
+      },
+    }).catch(() => ({mentionedLogos: null, partnerLogos: null})),
     // Add other queries here, so that they are loaded in parallel
   ]);
 
   return {
     featuredCollection: collections.nodes[0],
+    featuredProducts: featuredProducts.nodes,
+    companyLogos,
   };
 }
 
@@ -62,10 +74,97 @@ function loadDeferredData({context}) {
 export default function Homepage() {
   /** @type {LoaderReturnData} */
   const data = useLoaderData();
+  
+  // Hero image URL from Shopify Files
+  const heroImageUrl = 'https://cdn.shopify.com/s/files/1/0784/6769/4845/files/01.png?v=1761929735';
+  
+  // Process company logos data
+  // Each metaobject has multiple fields, each field is a logo
+  const processLogos = (metaobject) => {
+    if (!metaobject?.fields) return [];
+    
+    // Filter only fields that have MediaImage references
+    return metaobject.fields
+      .filter(field => field.reference?.__typename === 'MediaImage')
+      .map(field => ({
+        id: field.reference.id,
+        image: field.reference.image,
+        title: field.key, // Use field key as title (e.g., "vogue", "ad", "beta")
+      }));
+  };
+
+  const mentionedLogos = processLogos(data.companyLogos?.mentionedLogos);
+  const partnerLogos = processLogos(data.companyLogos?.partnerLogos);
+  
+  // Temporary mock data for testing if no real data exists
+  const mockLogos = [
+    {
+      id: 'mock-1',
+      image: {
+        url: 'https://via.placeholder.com/150x60/000000/FFFFFF?text=Logo+1',
+        altText: 'Test Logo 1',
+        width: 150,
+        height: 60
+      },
+      title: 'Test Company 1'
+    },
+    {
+      id: 'mock-2', 
+      image: {
+        url: 'https://via.placeholder.com/150x60/000000/FFFFFF?text=Logo+2',
+        altText: 'Test Logo 2',
+        width: 150,
+        height: 60
+      },
+      title: 'Test Company 2'
+    },
+    {
+      id: 'mock-3',
+      image: {
+        url: 'https://via.placeholder.com/150x60/000000/FFFFFF?text=Logo+3', 
+        altText: 'Test Logo 3',
+        width: 150,
+        height: 60
+      },
+      title: 'Test Company 3'
+    },
+    {
+      id: 'mock-4',
+      image: {
+        url: 'https://via.placeholder.com/150x60/000000/FFFFFF?text=Logo+4', 
+        altText: 'Test Logo 4',
+        width: 150,
+        height: 60
+      },
+      title: 'Test Company 4'
+    }
+  ];
+
+  // Use mock data if no real data exists
+  const finalMentionedLogos = mentionedLogos.length > 0 ? mentionedLogos : mockLogos;
+  const finalPartnerLogos = partnerLogos.length > 0 ? partnerLogos : mockLogos;
+  
   return (
     <div className="home">
-      <FeaturedCollection collection={data.featuredCollection} />
-      <RecommendedProducts products={data.recommendedProducts} />
+      <HeroSection imageUrl={heroImageUrl} />
+      <FeaturedProducts products={data.featuredProducts} />
+      <CompanyLogos mentionedLogos={finalMentionedLogos} partnerLogos={finalPartnerLogos} />
+      {/* Featured collection removed to show hero image */}
+      {/* <RecommendedProducts products={data.recommendedProducts} /> */}
+    </div>
+  );
+}
+
+/**
+ * @param {{
+ *   imageUrl: string;
+ * }}
+ */
+function HeroSection({imageUrl}) {
+  if (!imageUrl) return null;
+  return (
+    <div className="hero-section">
+      <img src={imageUrl} alt="Hero" />
     </div>
   );
 }

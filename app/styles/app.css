@@ -1,3 +1,12 @@
+/* Custom font face declaration for FragmentMono-Regular */
+@font-face {
+  font-family: 'FragmentMono';
+  src: url('/fonts/FragmentMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* Improves loading performance */
+}
+
 :root {
   --aside-width: 400px;
   --cart-aside-summary-height-with-discount: 300px;
@@ -5,15 +14,13 @@
   --grid-item-width: 355px;
   --header-height: 64px;
   --color-dark: #000;
-  --color-light: #fff;
+  --color-light: #FAFAF8;
 }
 
-/* Load IBM Plex Mono from Google Fonts for the whole site */
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&display=swap');
-
-/* Apply IBM Plex Mono globally */
+/* Apply FragmentMono globally */
 body {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'FragmentMono', monospace;
+  background-color: #FAFAF8;
 }
 
 img {
@@ -175,16 +182,86 @@ button.reset:hover:not(:has(> *)) {
   background: transparent;
   display: flex;
   justify-content: space-between;
-  height: var(--header-height);
-  padding: 0 2rem;
-  position: relative; /* header stays at top of flow and will not follow scroll */
+  height: calc(var(--header-height) * 1.1); /* Scale header height by 10% */
+  padding: 0 2.2rem; /* Scale padding by 10% */
+  position: absolute; /* Position on top of image */
+  top: calc(var(--header-height) * 0.1); /* Add 10% margin above header */
+  left: 0;
+  right: 0;
   width: 100%;
+  z-index: 100; /* Above hero image */
+  color: white; /* White text for header */
+  font-size: 1.1em; /* Scale text size by 10% instead of transform */
+}
+
+.header * {
+  color: white !important; /* Force all header children to white */
 }
 
 .header-left-nav {
   display: flex;
-  gap: 2rem;
+  gap: 3rem; /* Increased gap from 2rem to 3rem for more space between nav items */
   align-items: center;
+  margin-left: 1rem; /* Move navigation items a little to the right */
+}
+
+/* Dropdown container */
+.nav-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Dropdown arrow button */
+.dropdown-arrow {
+  background: none;
+  border: none;
+  color: inherit !important;
+  font-size: 0.7rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: transform 0.2s ease;
+}
+
+.dropdown-arrow:hover {
+  transform: translateY(2px);
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 0;
+  min-width: 200px;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+/* Dropdown items */
+.dropdown-item {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  color: var(--color-dark) !important;
+  text-decoration: none;
+  font-family: 'FragmentMono', monospace;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-item:first-child {
+  font-weight: 500;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 0.25rem;
 }
 
 .header-logo {
@@ -201,14 +278,14 @@ button.reset:hover:not(:has(> *)) {
 /* Site logo sizing inside the header */
 .site-logo,
 .header-logo img {
-  height: 130px; /* adjust this to make logo bigger/smaller */
+  height: 143px; /* Scaled from 130px by 10% (130 * 1.1 = 143) */
   width: auto;
   display: block;
 }
 
 .header-right {
   display: flex;
-  gap: 2rem;
+  gap: 2.2rem; /* Scale gap by 10% */
   align-items: center;
 }
 
@@ -221,8 +298,13 @@ main {
 .nav-link {
   text-decoration: none;
   color: var(--color-dark);
-  font-weight: 500;
+  font-weight: 300; /* Zmienione z 500 na 300 - chudsza czcionka */
   transition: opacity 0.2s ease;
+}
+
+/* White nav links on home page */
+.home .nav-link {
+  color: white !important;
 }
 
 .nav-link:hover {
@@ -233,9 +315,14 @@ main {
   border: none;
   background: none;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 300; /* Zmienione z 500 na 300 - chudsza czcionka */
   padding: 0.5rem 1rem;
   transition: opacity 0.2s ease;
+}
+
+/* White language toggle on home page */
+.home .language-toggle {
+  color: white !important;
 }
 
 .language-toggle:hover {
@@ -279,7 +366,7 @@ main {
 }
 
 .footer-contact h3 {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 500;
   margin: 0;
   color: var(--color-dark);
@@ -287,16 +374,17 @@ main {
 
 .footer-contact p {
   margin: 0;
-  font-size: 1.5rem;
-  color: #757575;
+  font-size: 1.2rem;
+  color: #bababa;
 }
 
 .footer-slogan {
-  font-size: 4.5rem;
+  font-size: 4rem;
   font-weight: 500;
-  text-align: right;
+  text-align: left;
   line-height: 1.2;
-  color: #757575;
+  color: #bababa;
+  margin-right: 4rem;
 }
 
 @media (max-width: 968px) {
@@ -686,7 +774,7 @@ main {
   margin: 0 auto;
   /* Reduced padding to make margins smaller on the regulamin page. */
   /* To change margins: edit the horizontal value (second) below or the .regulamin-content max-width. */
-  padding: 2rem 1rem;
+  padding: 8rem 1rem 2rem 1rem;
   min-height: calc(100vh - var(--header-height) - 400px); /* Adjust for header and footer height */
 }
 
@@ -858,4 +946,813 @@ main {
 /* Visual debug helper (remove later): uncomment to see the constrained box */
 /* .regulamin-page .regulamin-content { outline: 1px dashed rgba(0,0,0,0.08); } */
 
+/*
+* --------------------------------------------------
+* Hero Section
+* --------------------------------------------------
+*/
+.hero-section {
+  width: 100vw; /* Full viewport width */
+  margin: 0; /* Remove all margins */
+  margin-left: calc(-50vw + 50%); /* Break out of container */
+  position: relative;
+  z-index: 1; /* Below header */
+}
 
+.hero-section img {
+  width: 100%;
+  height: auto;
+  display: block !important;
+  object-fit: contain; /* Changed from 'cover' to 'contain' for better quality */
+  image-rendering: -webkit-optimize-contrast; /* Better image rendering */
+  image-rendering: crisp-edges;
+}
+
+/* White text for header on home page with hero */
+.home .header,
+.home .header a,
+.home .header button,
+.home .nav-link,
+.home .header .nav-link,
+.home .header-left-nav a,
+.home .header-right button,
+.home .language-toggle {
+  color: white !important;
+}
+
+/* Logo is already white, no filter needed */
+
+/*
+* --------------------------------------------------
+* routes/__index
+* --------------------------------------------------
+*/
+.home {
+  position: relative;
+}
+
+.featured-collection {
+  display: block;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
+}
+
+/*
+* --------------------------------------------------
+* components/FeaturedProducts
+* --------------------------------------------------
+*/
+.featured-products-section {
+  padding: 1rem 0; /* Jednakowy padding góra/dół jak gap */
+  background: transparent;
+  margin-bottom: 2rem; /* Zmniejszony margin od stopki */
+  /* Nadpisanie globalnych stylów z reset.css */
+  margin-left: -1rem; /* Kompensuje margin z body > main */
+  margin-right: -1rem; /* Kompensuje margin z body > main */
+}
+
+.featured-products-container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem; /* Taki sam jak gap - jednakowe marginesy boczne */
+}
+
+.featured-products-grid {
+  display: grid;
+  grid-template-columns: 2fr 4fr; /* Zmienione z 1fr 1fr na 3fr 2fr - 60% lewo / 40% prawo */
+  grid-template-rows: 1fr 1fr; /* Dwa równe rzędy */
+  gap: 1rem; /* Podstawowa wartość - taka sama wszędzie */
+  height: 1400px; /* Powiększone z 600px na 1200px - dwukrotnie */
+}
+
+.left-products {
+  display: contents; /* Pozwala elementom być bezpośrednio w gridzie */
+}
+
+.right-product {
+  grid-column: 2; /* Druga kolumna */
+  grid-row: 1 / 3; /* Rozciąga się przez oba rzędy */
+}
+
+.product-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0; /* Zmienione z 8px na 0 - kwadratowe krawędzie */
+  text-decoration: none;
+  color: inherit;
+  height: 100%; /* Powrót do height: 100% dla grid layout */
+  /* Usunięte transition: transform - brak animacji */
+  display: block; /* Zapewnia, że zachowuje się jak blok */
+}
+
+.product-image-container {
+  position: relative;
+  width: 100%;
+  height: 100%; /* Powrót do height: 100% dla grid layout */
+  overflow: hidden;
+  display: block; /* Zapewnia prawidłowe wyświetlanie */
+}
+
+.product-image {
+  width: 100%;
+  height: 100%; /* Powrót do height: 100% dla grid layout */
+  object-fit: cover; /* Powrót do cover - wypełnia przestrzeń */
+  object-position: center 90%; /* Zmienione z center na center 30% - przesunięcie w górę */
+  display: block; /* Usuwa domyślne marginesy obrazka */
+  /* Usunięte transition: transform - obraz się nie zmienia */
+  border-radius: 0; /* Nadpisuje globalny border-radius: 4px dla img */
+  transform: scale(1.1); /* Lekkie przybliżenie dla lepszego wypełnienia */
+}
+
+.product-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px; /* Znacznie zmniejszone z 80px na 32px */
+  background: rgba(255, 255, 255, 0.9); /* Zmienione z szarego na biały */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Nazwa po lewej, cena po prawej */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 0 0.5rem; /* Znacznie zmniejszone z 1.5rem na 0.5rem */
+}
+
+.product-card:hover .product-overlay {
+  opacity: 1;
+}
+
+.product-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  color: black; /* Zmienione z white na black dla białego tła */
+}
+
+.product-title {
+  font-size: 0.75rem; /* Znacznie zmniejszone z 1.75rem na 0.75rem */
+  font-weight: 300; /* Zmienione z 600 na 300 - chudsza czcionka */
+  margin: 0; /* Usunięty margin-bottom */
+  font-family: 'FragmentMono', monospace;
+}
+
+.product-price {
+  font-size: 0.75rem; /* Znacznie zmniejszone z 1.75rem na 0.75rem */
+  font-weight: 300; /* Zmienione z 500 na 300 - chudsza czcionka */
+  font-family: 'FragmentMono', monospace;
+}
+
+/*
+* --------------------------------------------------
+* components/SlidingLogos
+* --------------------------------------------------
+*/
+.sliding-logos-section {
+  padding: 1.5rem 0; /* Zmniejszony padding */
+  background: transparent;
+  margin-left: -1rem; /* Kompensuje margin z body > main */
+  margin-right: -1rem; /* Kompensuje margin z body > main */
+  overflow: hidden; /* Ukrywa logos poza kontenerem */
+}
+
+.sliding-logos-container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.sliding-logos-title {
+  text-align: left;
+  font-size: 1.2rem;
+  font-weight: 300;
+  font-family: 'FragmentMono', monospace;
+  margin-bottom: 2rem;
+  color: var(--color-dark);
+  text-transform: uppercase;
+  padding-left: 1rem; /* Dodaje padding z lewej strony */
+}
+
+.sliding-logos-track {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.sliding-logos-wrapper {
+  display: flex;
+  animation: slideLogos 45s linear infinite; /* Przyśpieszona animacja */
+  gap: 0; /* Usuwamy gap, bo mamy margin-right */
+}
+
+.sliding-logo-item {
+  flex: 0 0 auto;
+  margin-right: 6rem; /* Zwiększona odległość między logami */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px; /* Zmniejszona wysokość */
+}
+
+.sliding-logo-image {
+  max-height: 120px;
+  max-width: 300px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+  filter: grayscale(100%);
+  image-rendering: auto; /* Najlepsza jakość */
+  -webkit-backface-visibility: hidden;
+  -moz-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0); /* Hardware acceleration */
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.sliding-logo-item:hover .sliding-logo-image {
+  opacity: 1;
+  filter: grayscale(0%);
+}
+
+/* Animacja przesuwania - resetuje się co 12.5% bo mamy 8 kopii */
+@keyframes slideLogos {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-12.5%);
+  }
+}
+
+/* Animacja w odwrotną stronę dla Partners */
+@keyframes slideLogosReverse {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(12.5%);
+  }
+}
+
+/* Klasa dla odwrotnej animacji */
+.sliding-logos-wrapper-reverse {
+  display: flex;
+  animation: slideLogosReverse 45s linear infinite;
+  gap: 0;
+  transform: translateX(-12.5%); /* Startowa pozycja dla płynnej pętli */
+}
+
+/* Responsive design dla logów */
+@media (max-width: 768px) {
+  .sliding-logos-section {
+    padding: 1.5rem 0;
+  }
+  
+  .sliding-logos-title {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+  }
+  
+  .sliding-logo-item {
+    height: 80px; /* Zmniejszona wysokość na tablet */
+    margin-right: 4rem; /* Zwiększona odległość na tablet */
+  }
+  
+  .sliding-logo-image {
+    max-height: 80px; /* Zmniejszona wysokość na tablet */
+    max-width: 200px; /* Zmniejszona szerokość na tablet */
+  }
+  
+  .sliding-logos-wrapper {
+    animation-duration: 35s; /* Przyśpieszona animacja na mobile */
+  }
+
+  .sliding-logos-wrapper-reverse {
+    animation-duration: 35s; /* Przyśpieszona animacja na mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .sliding-logos-section {
+    padding: 1rem 0;
+  }
+  
+  .sliding-logos-title {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+  }
+  
+  .sliding-logo-item {
+    height: 60px; /* Zmniejszona wysokość na mobile */
+    margin-right: 3rem; /* Zwiększona odległość na mobile */
+  }
+  
+  .sliding-logo-image {
+    max-height: 60px; /* Zmniejszona wysokość na mobile */
+    max-width: 150px; /* Zmniejszona szerokość na mobile */
+  }
+}
+
+/* Responsive design - jednakowe odstępy na wszystkich urządzeniach */
+
+/* Large screens (Desktop) - już ustawione powyżej: 1rem */
+
+/* Medium screens (Tablet) */
+@media (max-width: 1024px) {
+  .featured-products-section {
+    padding: 0.8rem 0;
+    margin-left: -1rem; /* Kompensuje margin z body > main */
+    margin-right: -1rem; /* Kompensuje margin z body > main */
+  }
+  
+  .featured-products-container {
+    padding: 0 0.8rem;
+  }
+  
+  .featured-products-grid {
+    gap: 0.8rem;
+  }
+}
+
+/* Small screens (Mobile) */
+@media (max-width: 768px) {
+  .featured-products-section {
+    padding: 0.6rem 0;
+    margin-left: -1rem; /* Kompensuje margin z body > main */
+    margin-right: -1rem; /* Kompensuje margin z body > main */
+  }
+  
+  .featured-products-container {
+    padding: 0 0.6rem;
+  }
+  
+  .featured-products-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto; /* Trzy rzędy na mobile */
+    height: auto;
+    gap: 0.6rem; /* Taka sama wartość jak marginesy */
+  }
+  
+  .left-products {
+    display: block; /* Powrót do normalnego display na mobile */
+    order: 2;
+  }
+  
+  .right-product {
+    grid-column: 1; /* Pierwsza kolumna na mobile */
+    grid-row: 1; /* Pierwszy rząd */
+    order: 1;
+    height: 300px; /* Stała wysokość na mobile */
+  }
+  
+  .left-products .product-card {
+    height: 200px; /* Stała wysokość dla małych produktów na mobile */
+    margin-bottom: 0.6rem; /* Taki sam jak gap */
+  }
+  
+  .left-products .product-card:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .featured-products-section {
+    padding: 0.4rem 0;
+    margin-left: -1rem; /* Kompensuje margin z body > main */
+    margin-right: -1rem; /* Kompensuje margin z body > main */
+  }
+  
+  .featured-products-container {
+    padding: 0 0.4rem;
+  }
+  
+  .featured-products-grid {
+    gap: 0.4rem;
+  }
+  
+  .left-products .product-card {
+    margin-bottom: 0.4rem;
+  }
+}
+
+
+
+
+/* ============================================
+   ABOUT PAGE STYLES
+   ============================================ */
+
+.about-page {
+  width: 100%;
+}
+
+/* Ensure header text is visible on about and shop pages */
+.about-page ~ footer,
+.shop-page ~ footer,
+.regulamin-page ~ footer,
+body:has(.about-page) .header,
+body:has(.shop-page) .header,
+body:has(.regulamin-page) .header {
+  position: relative;
+  background: transparent;
+}
+
+body:has(.about-page) .nav-link,
+body:has(.about-page) .language-toggle,
+body:has(.shop-page) .nav-link,
+body:has(.shop-page) .language-toggle,
+body:has(.regulamin-page) .nav-link,
+body:has(.regulamin-page) .language-toggle {
+  color: var(--color-dark) !important;
+}
+
+/* Hero Section */
+.about-hero {
+  padding: 4rem 0;
+  background: var(--color-light);
+  text-align: center;
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+
+.about-hero-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.about-hero-title {
+  font-size: 3rem;
+  font-weight: 300;
+  font-family: 'FragmentMono', monospace;
+  margin-bottom: 1rem;
+  color: var(--color-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.about-hero-subtitle {
+  font-size: 1.2rem;
+  font-weight: 300;
+  font-family: 'FragmentMono', monospace;
+  color: var(--color-dark);
+  opacity: 0.7;
+}
+
+/* Content Section */
+.about-content {
+  padding: 8rem 0 4rem 0;
+  background-color: transparent;
+}
+
+.about-content-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Main Content Block - text left, images right */
+.about-main-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* Text Column (Left) */
+.about-text-column {
+  padding-right: 2rem;
+}
+
+.about-paragraph {
+  font-size: 0.85rem;
+  line-height: 1.8;
+  margin-bottom: 3rem;
+  color: var(--color-dark);
+  font-family: 'FragmentMono', monospace;
+  font-weight: 300;
+  text-align: justify;
+}
+
+.about-contact-info {
+  margin-top: 4rem;
+}
+
+.about-contact-name,
+.about-contact-phone,
+.about-contact-email {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--color-dark);
+  font-family: 'FragmentMono', monospace;
+  font-weight: 300;
+  margin-bottom: 0.3rem;
+}
+
+.about-contact-name {
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+
+/* Images Column (Right) */
+.about-images-column {
+  display: grid;
+  grid-template-columns: 0.7fr 1.5fr;
+  gap: 2rem;
+  align-items: end;
+}
+
+.about-image-small {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.about-image-large {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.about-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 0;
+  image-rendering: auto;
+  image-rendering: -webkit-optimize-contrast;
+  -ms-interpolation-mode: bicubic;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  max-width: none;
+  -webkit-font-smoothing: subpixel-antialiased;
+  will-change: transform;
+}
+
+/* Shop Page - All Products Grid */
+.shop-page {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 5rem 1rem 4rem 1rem;
+}
+
+.shop-products-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
+
+.shop-product-item {
+  text-decoration: none;
+  color: var(--color-dark);
+  display: flex;
+  flex-direction: column;
+  background: white;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.shop-product-item:hover {
+  transform: translateY(-2px);
+}
+
+.shop-product-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.shop-product-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: white;
+  margin-bottom: 1rem;
+}
+
+.shop-product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: opacity 0.3s ease;
+}
+
+.shop-product-image-primary {
+  opacity: 1;
+  z-index: 2;
+}
+
+.shop-product-image-secondary {
+  opacity: 0;
+  z-index: 1;
+}
+
+.shop-product-link:hover .shop-product-image-primary {
+  opacity: 0;
+}
+
+.shop-product-link:hover .shop-product-image-secondary {
+  opacity: 1;
+}
+
+/* Product details section */
+.shop-product-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 1rem;
+  background: transparent;
+}
+
+.shop-product-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.shop-product-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+/* Color swatches */
+.shop-product-colors {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.color-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.color-swatch:hover {
+  transform: scale(1.2);
+}
+
+/* Product title */
+.shop-product-title-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.shop-product-title {
+  font-family: 'FragmentMono', monospace;
+  font-size: 0.85rem;
+  font-weight: 400;
+  margin: 0;
+  color: var(--color-dark);
+}
+
+/* Price */
+.shop-product-price {
+  font-family: 'FragmentMono', monospace;
+  font-size: 0.85rem;
+  font-weight: 300;
+  color: var(--color-dark);
+  margin: 0;
+}
+
+/* Add to cart button */
+.shop-add-to-cart {
+  background: var(--color-dark);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-family: 'FragmentMono', monospace;
+  font-size: 0.75rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  text-transform: uppercase;
+}
+
+.shop-add-to-cart:hover {
+  opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .shop-page {
+    padding: 4rem 1.5rem 3rem 1.5rem;
+  }
+
+  .shop-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .about-hero {
+    padding: 3rem 0;
+  }
+
+  .about-hero-title {
+    font-size: 2rem;
+  }
+
+  .about-hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .about-content {
+    padding: 3rem 1.5rem;
+  }
+
+  .about-main-block {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .about-text-column {
+    padding-right: 0;
+  }
+
+  .about-paragraph {
+    text-align: left;
+  }
+
+  .about-image-small {
+    height: 250px;
+  }
+
+  .about-image-large {
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .shop-page {
+    padding: 3rem 1rem 2rem 1rem;
+  }
+
+  .shop-products-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .shop-product-title {
+    font-size: 0.85rem;
+  }
+
+  .shop-product-price {
+    font-size: 0.8rem;
+  }
+
+  .about-hero {
+    padding: 2rem 0;
+  }
+
+  .about-hero-title {
+    font-size: 1.5rem;
+  }
+
+  .about-hero-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .about-content {
+    padding: 2rem 1rem;
+  }
+
+  .about-main-block {
+    gap: 2rem;
+  }
+
+  .about-paragraph {
+    font-size: 0.9rem;
+  }
+
+  .about-contact-name,
+  .about-contact-phone,
+  .about-contact-email {
+    font-size: 0.9rem;
+  }
+
+  .about-image-small {
+    height: 200px;
+  }
+
+  .about-image-large {
+    height: 300px;
+  }
+}

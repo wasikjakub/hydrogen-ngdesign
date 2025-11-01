@@ -1,6 +1,4 @@
 import {useLoaderData, Link} from 'react-router';
-import {getPaginationVariables, Image} from '@shopify/hydrogen';
-import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 
 /**
  * @param {Route.LoaderArgs} args
@@ -20,19 +18,17 @@ export async function loader(args) {
  * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
  * @param {Route.LoaderArgs}
  */
-async function loadCriticalData({context, request}) {
-  const paginationVariables = getPaginationVariables(request, {
-    pageBy: 4,
-  });
-
-  const [{collections}] = await Promise.all([
-    context.storefront.query(COLLECTIONS_QUERY, {
-      variables: paginationVariables,
+async function loadCriticalData({context}) {
+  const [{products}] = await Promise.all([
+    context.storefront.query(ALL_PRODUCTS_QUERY, {
+      variables: {
+        first: 250, // Załaduj wszystkie produkty naraz (do 250)
+      },
     }),
     // Add other queries here, so that they are loaded in parallel
   ]);
 
-  return {collections};
+  return {products};
 }
 
 /**
@@ -41,101 +37,149 @@ async function loadCriticalData({context, request}) {
  * Make sure to not throw any errors here, as it will cause the page to 500.
  * @param {Route.LoaderArgs}
  */
-function loadDeferredData({context}) {
+function loadDeferredData() {
   return {};
 }
 
 export default function Collections() {
   /** @type {LoaderReturnData} */
-  const {collections} = useLoaderData();
+  const {products} = useLoaderData();
 
   return (
-    <div className="collections">
-      <h1>Collections</h1>
-      <PaginatedResourceSection
-        connection={collections}
-        resourcesClassName="collections-grid"
-      >
-        {({node: collection, index}) => (
-          <CollectionItem
-            key={collection.id}
-            collection={collection}
-            index={index}
+    <div className="shop-page">
+      <div className="shop-products-grid">
+        {products.edges.map(({node: product}, index) => (
+          <ProductGridItem
+            key={product.id}
+            product={product}
+            loading={index < 6 ? 'eager' : undefined}
           />
-        )}
-      </PaginatedResourceSection>
+        ))}
+      </div>
     </div>
   );
 }
 
 /**
  * @param {{
- *   collection: CollectionFragment;
- *   index: number;
+ *   product: ProductFragment;
+ *   loading?: 'eager' | 'lazy';
  * }}
  */
-function CollectionItem({collection, index}) {
+function ProductGridItem({product, loading}) {
+  const firstImage = product.images.edges[0]?.node;
+  const secondImage = product.images.edges[1]?.node;
+  
+  // Get color variants from product options
+  const colorOption = product.options.find(opt => 
+    opt.name.toLowerCase() === 'color' || 
+    opt.name.toLowerCase() === 'kolor' ||
+    opt.name.toLowerCase() === 'colour'
+  );
+
   return (
-    <Link
-      className="collection-item"
-      key={collection.id}
-      to={`/collections/${collection.handle}`}
-      prefetch="intent"
-    >
-      {collection?.image && (
-        <Image
-          alt={collection.image.altText || collection.title}
-          aspectRatio="1/1"
-          data={collection.image}
-          loading={index < 3 ? 'eager' : undefined}
-          sizes="(min-width: 45em) 400px, 100vw"
-        />
-      )}
-      <h5>{collection.title}</h5>
-    </Link>
+    <div className="shop-product-item">
+      <Link
+        to={`/products/${product.handle}`}
+        prefetch="intent"
+        className="shop-product-link"
+      >
+        <div className="shop-product-image-wrapper">
+          {firstImage && (
+            <img
+              src={firstImage.url}
+              alt={firstImage.altText || product.title}
+              className="shop-product-image shop-product-image-primary"
+              loading={loading}
+            />
+          )}
+          {secondImage && (
+            <img
+              src={secondImage.url}
+              alt={secondImage.altText || product.title}
+              className="shop-product-image shop-product-image-secondary"
+              loading="lazy"
+            />
+          )}
+        </div>
+      </Link>
+      
+      <div className="shop-product-details">
+        <div className="shop-product-left">
+          {/* Color variants */}
+          {colorOption && colorOption.values.length > 0 && (
+            <div className="shop-product-colors">
+              {colorOption.values.map((color) => (
+                <div
+                  key={color}
+                  className="color-swatch"
+                  style={{backgroundColor: color.toLowerCase()}}
+                  title={color}
+                />
+              ))}
+            </div>
+          )}
+          {/* Product title */}
+          <Link to={`/products/${product.handle}`} className="shop-product-title-link">
+            <h3 className="shop-product-title">{product.title}</h3>
+          </Link>
+        </div>
+        
+        <div className="shop-product-right">
+          {/* Price */}
+          <p className="shop-product-price">
+            {parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)} {product.priceRange.minVariantPrice.currencyCode}
+          </p>
+          {/* Add to cart button */}
+          <button className="shop-add-to-cart">DO KOSZYKA</button>
+        </div>
+      </div>
+    </div>
   );
 }
 
-const COLLECTIONS_QUERY = `#graphql
-  fragment Collection on Collection {
+const ALL_PRODUCTS_QUERY = `#graphql
+  fragment ProductGridItem on Product {
     id
     title
     handle
-    image {
-      id
-      url
-      altText
-      width
-      height
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    options {
+      name
+      values
+    }
+    images(first: 2) {
+      edges {
+        node {
+          id
+          url
+          altText
+          width
+          height
+        }
+      }
     }
   }
-  query StoreCollections(
+  query AllProducts(
     $country: CountryCode
-    $endCursor: String
-    $first: Int
     $language: LanguageCode
-    $last: Int
-    $startCursor: String
+    $first: Int!
   ) @inContext(country: $country, language: $language) {
-    collections(
-      first: $first,
-      last: $last,
-      before: $startCursor,
-      after: $endCursor
-    ) {
-      nodes {
-        ...Collection
-      }
-      pageInfo {
-        hasNextPage
-        hasPreviousPage
-        startCursor
-        endCursor
+    products(first: $first) {
+      edges {
+        node {
+          ...ProductGridItem
+        }
       }
     }
   }
 `;
 
 /** @typedef {import('./+types/collections._index').Route} Route */
-/** @typedef {import('storefrontapi.generated').CollectionFragment} CollectionFragment */
+/** @typedef {import('storefrontapi.generated').ProductGridItemFragment} ProductFragment */
 /** @typedef {import('@shopify/remix-oxygen').SerializeFrom<typeof loader>} LoaderReturnData */

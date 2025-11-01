@@ -1,22 +1,68 @@
-import {NavLink} from 'react-router';
+import {NavLink, useLocation} from 'react-router';
 import {useAside} from '~/components/Aside';
-import logoUrl from '../assets/logo.png';
+import {useState} from 'react';
+import logoWhiteUrl from '../assets/logo-white.png';
+import logoDarkUrl from '../assets/logo.png';
 
 /**
  * @param {HeaderProps}
  */
 export function Header({header}) {
-  const {shop} = header;
+  const {shop, collections} = header;
+  const location = useLocation();
+  const [isShopDropdownOpen, setIsShopDropdownOpen] = useState(false);
+  
+  // Use dark logo on about, collections, and regulamin pages, white logo everywhere else
+  const logoUrl = (location.pathname.includes('/about') || 
+                   location.pathname.includes('/collections') ||
+                   location.pathname.includes('/regulamin')) 
+    ? logoDarkUrl 
+    : logoWhiteUrl;
+  
   return (
     <header className="header">
       <nav className="header-left-nav">
-        <NavLink prefetch="intent" to="/collections" className="nav-link">
-          Sklep
-        </NavLink>
-        <NavLink prefetch="intent" to="/pages/about" className="nav-link">
+        <div className="nav-dropdown">
+          <NavLink prefetch="intent" to="/collections" className="nav-link">
+            Sklep
+          </NavLink>
+          <button 
+            className="dropdown-arrow"
+            onMouseEnter={() => setIsShopDropdownOpen(true)}
+            onMouseLeave={() => setIsShopDropdownOpen(false)}
+          >
+            ▼
+          </button>
+          {isShopDropdownOpen && collections?.nodes && collections.nodes.length > 0 && (
+            <div 
+              className="dropdown-menu"
+              onMouseEnter={() => setIsShopDropdownOpen(true)}
+              onMouseLeave={() => setIsShopDropdownOpen(false)}
+            >
+              <NavLink 
+                prefetch="intent" 
+                to="/collections" 
+                className="dropdown-item"
+              >
+                Wszystkie produkty
+              </NavLink>
+              {collections.nodes.map((collection) => (
+                <NavLink
+                  key={collection.id}
+                  prefetch="intent"
+                  to={`/collections/${collection.handle}`}
+                  className="dropdown-item"
+                >
+                  {collection.title}
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
+        <NavLink prefetch="intent" to="/about" className="nav-link">
           O Nas
         </NavLink>
-        <NavLink prefetch="intent" to="/pages/contact" className="nav-link">
+        <NavLink prefetch="intent" to="/contact" className="nav-link">
           Kontakt
         </NavLink>
       </nav>
@@ -28,7 +74,7 @@ export function Header({header}) {
       </div>
 
       <div className="header-right">
-        <button className="language-toggle">EN PL</button>
+        <button className="language-toggle">EN | PL</button>
         {/* Cart toggle hidden for now per request */}
       </div>
     </header>
@@ -138,7 +184,7 @@ const FALLBACK_HEADER_MENU = {
       tags: [],
       title: 'About',
       type: 'PAGE',
-      url: '/pages/about',
+      url: '/about',
       items: [],
     },
   ],

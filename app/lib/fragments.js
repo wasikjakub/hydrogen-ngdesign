@@ -216,6 +216,13 @@ export const HEADER_QUERY = `#graphql
     menu(handle: $headerMenuHandle) {
       ...Menu
     }
+    collections(first: 20) {
+      nodes {
+        id
+        title
+        handle
+      }
+    }
   }
   ${MENU_FRAGMENT}
 `;
@@ -231,4 +238,114 @@ export const FOOTER_QUERY = `#graphql
     }
   }
   ${MENU_FRAGMENT}
+`;
+
+// Featured Products Fragment and Query
+export const FEATURED_PRODUCT_FRAGMENT = `#graphql
+  fragment FeaturedProduct on Product {
+    id
+    handle
+    title
+    featuredImage {
+      id
+      url
+      altText
+      width
+      height
+    }
+    variants(first: 1) {
+      nodes {
+        id
+        price {
+          amount
+          currencyCode
+        }
+        compareAtPrice {
+          amount
+          currencyCode
+        }
+      }
+    }
+  }
+`;
+
+export const FEATURED_PRODUCTS_QUERY = `#graphql
+  query FeaturedProducts(
+    $country: CountryCode
+    $language: LanguageCode
+    $first: Int = 3
+  ) @inContext(language: $language, country: $country) {
+    products(first: $first, sortKey: BEST_SELLING) {
+      nodes {
+        ...FeaturedProduct
+      }
+    }
+  }
+  ${FEATURED_PRODUCT_FRAGMENT}
+`;
+
+// Company Logos Fragments and Queries
+export const COMPANY_LOGO_FRAGMENT = `#graphql
+  fragment CompanyLogo on MetaobjectField {
+    value
+    reference {
+      ... on MediaImage {
+        id
+        image {
+          url
+          altText
+          width
+          height
+        }
+      }
+    }
+  }
+`;
+
+export const COMPANY_LOGOS_QUERY = `#graphql
+  query CompanyLogos(
+    $country: CountryCode
+    $language: LanguageCode
+    $mentionedHandle: String!
+    $partnerHandle: String!
+  ) @inContext(language: $language, country: $country) {
+    mentionedLogos: metaobject(handle: {type: "mentioned_logos", handle: $mentionedHandle}) {
+      id
+      fields {
+        key
+        value
+        reference {
+          __typename
+          ... on MediaImage {
+            id
+            image {
+              url
+              altText
+              width
+              height
+            }
+          }
+        }
+      }
+    }
+    partnerLogos: metaobject(handle: {type: "partner_logos", handle: $partnerHandle}) {
+      id
+      fields {
+        key
+        value
+        reference {
+          __typename
+          ... on MediaImage {
+            id
+            image {
+              url
+              altText
+              width
+              height
+            }
+          }
+        }
+      }
+    }
+  }
 `;
