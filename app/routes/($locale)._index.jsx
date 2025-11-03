@@ -37,8 +37,8 @@ async function loadCriticalData({context}) {
     context.storefront.query(FEATURED_PRODUCTS_QUERY),
     context.storefront.query(COMPANY_LOGOS_QUERY, {
       variables: {
-        mentionedHandle: 'mentioned-logos-rrrsubfh',
-        partnerHandle: 'partner-logos-fccgdtgo', // Zmień na prawdziwy handle z Shopify
+        mentionedHandle: 'mentioned-logos-wk7gfhtv',
+        partnerHandle: 'parter-logos-ki6ix0nm',
       },
     }).catch(() => ({mentionedLogos: null, partnerLogos: null})),
     // Add other queries here, so that they are loaded in parallel
