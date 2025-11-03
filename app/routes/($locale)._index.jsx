@@ -38,7 +38,7 @@ async function loadCriticalData({context}) {
     context.storefront.query(COMPANY_LOGOS_QUERY, {
       variables: {
         mentionedHandle: 'mentioned-logos-wk7gfhtv',
-        partnerHandle: 'parter-logos-ki6ix0nm',
+        partnerHandle: 'partner-logos-b6pxc0ci',
       },
     }).catch(() => ({mentionedLogos: null, partnerLogos: null})),
     // Add other queries here, so that they are loaded in parallel

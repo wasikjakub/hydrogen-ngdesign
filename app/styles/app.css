@@ -1161,20 +1161,14 @@ main {
   width: auto;
   height: auto;
   object-fit: contain;
-  opacity: 0.7;
-  transition: opacity 0.3s ease;
-  filter: grayscale(100%);
+  opacity: 1;
+  filter: grayscale(0%);
   image-rendering: auto; /* Najlepsza jakość */
   -webkit-backface-visibility: hidden;
   -moz-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0); /* Hardware acceleration */
   -webkit-font-smoothing: subpixel-antialiased;
-}
-
-.sliding-logo-item:hover .sliding-logo-image {
-  opacity: 1;
-  filter: grayscale(0%);
 }
 
 /* Animacja przesuwania - resetuje się co 12.5% bo mamy 8 kopii */
