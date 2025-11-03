@@ -689,6 +689,7 @@ export type ProductGridItemFragment = Pick<
   priceRange: {
     minVariantPrice: Pick<StorefrontAPI.MoneyV2, 'amount' | 'currencyCode'>;
   };
+  options: Array<Pick<StorefrontAPI.ProductOption, 'name' | 'values'>>;
   images: {
     edges: Array<{
       node: Pick<
@@ -702,14 +703,7 @@ export type ProductGridItemFragment = Pick<
 export type AllProductsQueryVariables = StorefrontAPI.Exact<{
   country?: StorefrontAPI.InputMaybe<StorefrontAPI.CountryCode>;
   language?: StorefrontAPI.InputMaybe<StorefrontAPI.LanguageCode>;
-  first?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars['Int']['input']>;
-  last?: StorefrontAPI.InputMaybe<StorefrontAPI.Scalars['Int']['input']>;
-  startCursor?: StorefrontAPI.InputMaybe<
-    StorefrontAPI.Scalars['String']['input']
-  >;
-  endCursor?: StorefrontAPI.InputMaybe<
-    StorefrontAPI.Scalars['String']['input']
-  >;
+  first: StorefrontAPI.Scalars['Int']['input'];
 }>;
 
 export type AllProductsQuery = {
@@ -722,6 +716,7 @@ export type AllProductsQuery = {
             'amount' | 'currencyCode'
           >;
         };
+        options: Array<Pick<StorefrontAPI.ProductOption, 'name' | 'values'>>;
         images: {
           edges: Array<{
             node: Pick<
@@ -732,10 +727,6 @@ export type AllProductsQuery = {
         };
       };
     }>;
-    pageInfo: Pick<
-      StorefrontAPI.PageInfo,
-      'hasNextPage' | 'hasPreviousPage' | 'startCursor' | 'endCursor'
-    >;
   };
 };
 
@@ -1382,7 +1373,7 @@ interface GeneratedQueryTypes {
     return: CollectionQuery;
     variables: CollectionQueryVariables;
   };
-  '#graphql\n  fragment ProductGridItem on Product {\n    id\n    title\n    handle\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    images(first: 2) {\n      edges {\n        node {\n          id\n          url\n          altText\n          width\n          height\n        }\n      }\n    }\n  }\n  query AllProducts(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int\n    $last: Int\n    $startCursor: String\n    $endCursor: String\n  ) @inContext(country: $country, language: $language) {\n    products(\n      first: $first,\n      last: $last,\n      before: $startCursor,\n      after: $endCursor\n    ) {\n      edges {\n        node {\n          ...ProductGridItem\n        }\n      }\n      pageInfo {\n        hasNextPage\n        hasPreviousPage\n        startCursor\n        endCursor\n      }\n    }\n  }\n': {
+  '#graphql\n  fragment ProductGridItem on Product {\n    id\n    title\n    handle\n    priceRange {\n      minVariantPrice {\n        amount\n        currencyCode\n      }\n    }\n    options {\n      name\n      values\n    }\n    images(first: 2) {\n      edges {\n        node {\n          id\n          url\n          altText\n          width\n          height\n        }\n      }\n    }\n  }\n  query AllProducts(\n    $country: CountryCode\n    $language: LanguageCode\n    $first: Int!\n  ) @inContext(country: $country, language: $language) {\n    products(first: $first) {\n      edges {\n        node {\n          ...ProductGridItem\n        }\n      }\n    }\n  }\n': {
     return: AllProductsQuery;
     variables: AllProductsQueryVariables;
   };

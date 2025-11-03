@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/client",
+  "framework": "hydrogen",
+  "env": {
+    "SESSION_SECRET": "@session_secret",
+    "PUBLIC_STOREFRONT_API_TOKEN": "@public_storefront_api_token",
+    "PUBLIC_STORE_DOMAIN": "@public_store_domain",
+    "PUBLIC_STOREFRONT_ID": "@public_storefront_id",
+    "PUBLIC_CHECKOUT_DOMAIN": "@public_checkout_domain"
+  }
+}
