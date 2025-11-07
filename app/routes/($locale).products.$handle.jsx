@@ -1,4 +1,4 @@
-import {useLoaderData} from 'react-router';
+import {useLoaderData, useRouteLoaderData} from 'react-router';
 import {
   getSelectedProductOptions,
   Analytics,
@@ -10,6 +10,8 @@ import {
 import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
+import {ProductDescription} from '~/components/ProductDescription';
+import {AddToCartSection} from '~/components/AddToCartSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
 
 /**
@@ -76,7 +78,7 @@ async function loadCriticalData({context, params, request}) {
  * Make sure to not throw any errors here, as it will cause the page to 500.
  * @param {Route.LoaderArgs}
  */
-function loadDeferredData({context, params}) {
+function loadDeferredData() {
   // Put any API calls that is not critical to be available on first page render
   // For example: product reviews, product recommendations, social feeds.
 
@@ -86,6 +88,8 @@ function loadDeferredData({context, params}) {
 export default function Product() {
   /** @type {LoaderReturnData} */
   const {product} = useLoaderData();
+  const rootData = useRouteLoaderData('root');
+  const language = rootData?.selectedLocale?.language || 'EN';
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -105,45 +109,100 @@ export default function Product() {
 
   const {title, descriptionHtml} = product;
 
+  // Get all media images for the gallery, excluding the main variant image
+  const galleryImages = product.media?.nodes?.filter(
+    (media) => media.image?.url !== selectedVariant?.image?.url
+  ) || [];
+
   return (
-    <div className="product">
-      <ProductImage image={selectedVariant?.image} />
-      <div className="product-main">
-        <h1>{title}</h1>
-        <ProductPrice
-          price={selectedVariant?.price}
-          compareAtPrice={selectedVariant?.compareAtPrice}
+    <>
+      <div className="product">
+        <ProductImage image={selectedVariant?.image} />
+        <div className="product-main">
+          <div className="product-top-section">
+            <h1>{title}</h1>
+            <ProductPrice
+              price={selectedVariant?.price}
+              compareAtPrice={selectedVariant?.compareAtPrice}
+            />
+            <br />
+            
+            {/* Product options (variants) - WITHOUT add to cart */}
+            <ProductForm
+              productOptions={productOptions}
+            />
+            
+            {/* Quantity and Add to Cart - AT THE TOP */}
+            <AddToCartSection selectedVariant={selectedVariant} />
+          </div>
+          
+          <div className="product-description-section-wrapper">
+            {/* Description */}
+            <ProductDescription 
+              descriptionHtml={descriptionHtml} 
+              language={language}
+              sections={['opis']}
+            />
+            
+            {/* Material */}
+            <ProductDescription 
+              descriptionHtml={descriptionHtml} 
+              language={language}
+              sections={['material']}
+            />
+            
+            {/* Color */}
+            <ProductDescription 
+              descriptionHtml={descriptionHtml} 
+              language={language}
+              sections={['kolor']}
+            />
+            
+            {/* Dimensions */}
+            <ProductDescription 
+              descriptionHtml={descriptionHtml} 
+              language={language}
+              sections={['wymiary']}
+            />
+            
+            {/* Personalization and Notes */}
+            <ProductDescription 
+              descriptionHtml={descriptionHtml} 
+              language={language}
+              sections={['personalizacja', 'uwagi']}
+            />
+          </div>
+        </div>
+        <Analytics.ProductView
+          data={{
+            products: [
+              {
+                id: product.id,
+                title: product.title,
+                price: selectedVariant?.price.amount || '0',
+                vendor: product.vendor,
+                variantId: selectedVariant?.id || '',
+                variantTitle: selectedVariant?.title || '',
+                quantity: 1,
+              },
+            ],
+          }}
         />
-        <br />
-        <ProductForm
-          productOptions={productOptions}
-          selectedVariant={selectedVariant}
-        />
-        <br />
-        <br />
-        <p>
-          <strong>Description</strong>
-        </p>
-        <br />
-        <div dangerouslySetInnerHTML={{__html: descriptionHtml}} />
-        <br />
       </div>
-      <Analytics.ProductView
-        data={{
-          products: [
-            {
-              id: product.id,
-              title: product.title,
-              price: selectedVariant?.price.amount || '0',
-              vendor: product.vendor,
-              variantId: selectedVariant?.id || '',
-              variantTitle: selectedVariant?.title || '',
-              quantity: 1,
-            },
-          ],
-        }}
-      />
-    </div>
+      {galleryImages.length > 0 && (
+        <div className="product-gallery">
+          {galleryImages.map((media) => (
+            <div key={media.id} className="product-gallery-item">
+              <img
+                src={`${media.image.url}&width=800`}
+                alt={media.image.altText || product.title}
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -194,6 +253,19 @@ const PRODUCT_FRAGMENT = `#graphql
     description
     encodedVariantExistence
     encodedVariantAvailability
+    media(first: 20) {
+      nodes {
+        ... on MediaImage {
+          id
+          image {
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
+    }
     options {
       name
       optionValues {

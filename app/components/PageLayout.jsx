@@ -1,4 +1,4 @@
-import {Await, Link} from 'react-router';
+import {Await, Link, useLocation} from 'react-router';
 import {Suspense, useId} from 'react';
 import {Aside} from '~/components/Aside';
 import {Footer} from '~/components/Footer';
@@ -21,6 +21,9 @@ export function PageLayout({
   isLoggedIn,
   publicStoreDomain,
 }) {
+  const location = useLocation();
+  const isContactPage = location.pathname.includes('/contact');
+
   return (
     <Aside.Provider>
       <CartAside cart={cart} />
@@ -35,11 +38,13 @@ export function PageLayout({
         />
       )}
       <main>{children}</main>
-      <Footer
-        footer={footer}
-        header={header}
-        publicStoreDomain={publicStoreDomain}
-      />
+      {!isContactPage && (
+        <Footer
+          footer={footer}
+          header={header}
+          publicStoreDomain={publicStoreDomain}
+        />
+      )}
     </Aside.Provider>
   );
 }

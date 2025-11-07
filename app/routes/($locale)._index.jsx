@@ -32,9 +32,20 @@ export async function loader(args) {
  * @param {Route.LoaderArgs}
  */
 async function loadCriticalData({context}) {
-  const [{collections}, {products: featuredProducts}, companyLogos] = await Promise.all([
+  // Define the specific products you want to show (replace with your actual product IDs)
+  const featuredProductIds = [
+    'gid://shopify/Product/15657058009470',
+    'gid://shopify/Product/15657057714558',
+    'gid://shopify/Product/15657057550718',
+  ];
+
+  const [{collections}, {nodes: featuredProducts}, companyLogos] = await Promise.all([
     context.storefront.query(FEATURED_COLLECTION_QUERY),
-    context.storefront.query(FEATURED_PRODUCTS_QUERY),
+    context.storefront.query(FEATURED_PRODUCTS_QUERY, {
+      variables: {
+        productIds: featuredProductIds,
+      },
+    }),
     context.storefront.query(COMPANY_LOGOS_QUERY, {
       variables: {
         mentionedHandle: 'mentioned-logos-wk7gfhtv',
@@ -46,7 +57,7 @@ async function loadCriticalData({context}) {
 
   return {
     featuredCollection: collections.nodes[0],
-    featuredProducts: featuredProducts.nodes,
+    featuredProducts,
     companyLogos,
   };
 }
@@ -145,7 +156,7 @@ export default function Homepage() {
   const finalPartnerLogos = partnerLogos.length > 0 ? partnerLogos : mockLogos;
   
   return (
-    <div className="home">
+    <div className="home" data-route="homepage">
       <HeroSection imageUrl={heroImageUrl} />
       <FeaturedProducts products={data.featuredProducts} />
       <CompanyLogos mentionedLogos={finalMentionedLogos} partnerLogos={finalPartnerLogos} />

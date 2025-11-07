@@ -1,6 +1,6 @@
 import {NavLink, useLocation} from 'react-router';
 import {useAside} from '~/components/Aside';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import logoWhiteUrl from '../assets/logo-white.png';
 import logoDarkUrl from '../assets/logo.png';
 
@@ -11,16 +11,69 @@ export function Header({header}) {
   const {shop, collections} = header;
   const location = useLocation();
   const [isShopDropdownOpen, setIsShopDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = location.pathname;
+  const isProductPage = pathname.includes('/products/');
+  const isContactPage = pathname.includes('/contact');
   
-  // Use dark logo on about, collections, and regulamin pages, white logo everywhere else
-  const logoUrl = (location.pathname.includes('/about') || 
-                   location.pathname.includes('/collections') ||
-                   location.pathname.includes('/regulamin')) 
-    ? logoDarkUrl 
-    : logoWhiteUrl;
+  // Add scroll listener
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   
+  // Determine if we should use dark theme (white background, black logo)
+  const isDarkTheme = pathname.includes('/about') ||
+                      pathname.includes('/collections') ||
+                      pathname.includes('/regulamin') ||
+                      isContactPage ||
+                      isProductPage;
+  
+  // Use dark logo on pages with white background or when scrolled
+  const logoUrl = (isDarkTheme || isScrolled) ? logoDarkUrl : logoWhiteUrl;
+  
+  // Add special class for different pages
+  let headerClass = 'header';
+  if (isContactPage) {
+    headerClass = 'header header-contact';
+  } else if (isProductPage) {
+    headerClass = 'header header-product';
+  }
+  
+  // Add scrolled class
+  if (isScrolled) {
+    headerClass += ' header-scrolled';
+  }
+  
+  // Determine background color based on page and scroll state
+  let backgroundColor = 'transparent';
+  if (isProductPage) {
+    backgroundColor = '#FAFAF8'; // Always white on product pages
+  } else if (isScrolled) {
+    backgroundColor = '#FAFAF8'; // White when scrolled on other pages
+  }
+  
+  const headerStyle = {
+    position: 'fixed',
+    top: '0px',
+    left: '0px',
+    right: '0px',
+    zIndex: 9999,
+    width: '100%',
+    backgroundColor,
+    transition: 'background-color 0.3s ease'
+  };
+
   return (
-    <header className="header">
+    <header
+      className={headerClass}
+      data-page={isProductPage ? 'product' : undefined}
+      style={headerStyle}
+    >
       <nav className="header-left-nav">
         <div className="nav-dropdown">
           <NavLink prefetch="intent" to="/collections" className="nav-link">

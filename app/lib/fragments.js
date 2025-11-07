@@ -273,10 +273,10 @@ export const FEATURED_PRODUCTS_QUERY = `#graphql
   query FeaturedProducts(
     $country: CountryCode
     $language: LanguageCode
-    $first: Int = 3
+    $productIds: [ID!]!
   ) @inContext(language: $language, country: $country) {
-    products(first: $first, sortKey: BEST_SELLING) {
-      nodes {
+    nodes(ids: $productIds) {
+      ... on Product {
         ...FeaturedProduct
       }
     }
