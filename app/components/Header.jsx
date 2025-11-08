@@ -52,7 +52,7 @@ export function Header({header}) {
   // Determine background color based on page and scroll state
   let backgroundColor = 'transparent';
   if (isProductPage) {
-    backgroundColor = '#FAFAF8'; // Always white on product pages
+    backgroundColor = '#fff'; // Always white on product pages
   } else if (isScrolled) {
     backgroundColor = '#FAFAF8'; // White when scrolled on other pages
   }
@@ -99,16 +99,18 @@ export function Header({header}) {
               >
                 Wszystkie produkty
               </NavLink>
-              {collections.nodes.map((collection) => (
-                <NavLink
-                  key={collection.id}
-                  prefetch="intent"
-                  to={`/collections/${collection.handle}`}
-                  className="dropdown-item"
-                >
-                  {collection.title}
-                </NavLink>
-              ))}
+              {collections.nodes
+                .filter(collection => collection.handle !== 'frontpage' && collection.title.toLowerCase() !== 'home page')
+                .map((collection) => (
+                  <NavLink
+                    key={collection.id}
+                    prefetch="intent"
+                    to={`/collections/${collection.handle}`}
+                    className="dropdown-item"
+                  >
+                    {collection.title}
+                  </NavLink>
+                ))}
             </div>
           )}
         </div>

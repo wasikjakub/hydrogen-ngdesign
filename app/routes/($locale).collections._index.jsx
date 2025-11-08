@@ -1,4 +1,5 @@
-import {useLoaderData, Link} from 'react-router';
+import {useLoaderData, Link, useNavigate} from 'react-router';
+import {useState} from 'react';
 
 /**
  * @param {Route.LoaderArgs} args
@@ -45,6 +46,19 @@ export default function Collections() {
   /** @type {LoaderReturnData} */
   const {products} = useLoaderData();
 
+  // Debug: log products to console
+  console.log('Products from Shopify:', products);
+
+  if (!products || !products.edges || products.edges.length === 0) {
+    return (
+      <div className="shop-page">
+        <div className="shop-products-grid">
+          <p style={{color: 'red', fontWeight: 'bold'}}>No products found. Check your Shopify API connection and product availability.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="shop-page">
       <div className="shop-products-grid">
@@ -67,6 +81,7 @@ export default function Collections() {
  * }}
  */
 function ProductGridItem({product, loading}) {
+  const [selectedColor, setSelectedColor] = useState(null);
   const firstImage = product.images.edges[0]?.node;
   const secondImage = product.images.edges[1]?.node;
   
@@ -77,6 +92,35 @@ function ProductGridItem({product, loading}) {
     opt.name.toLowerCase() === 'colour'
   );
 
+  // Get variants for color-based image switching
+  const variants = product.variants?.edges || [];
+  
+  // Find the current image to display based on selected color
+  const getCurrentImages = () => {
+    // Always use second image from product.images as secondary (for hover)
+    const secondary = secondImage;
+    if (!selectedColor || variants.length === 0) {
+      return { primary: firstImage, secondary };
+    }
+    // Find variant matching selected color
+    const matchingVariant = variants.find(({node}) =>
+      node.selectedOptions?.some(opt =>
+        (opt.name.toLowerCase() === 'color' ||
+         opt.name.toLowerCase() === 'kolor') &&
+        opt.value.toLowerCase() === selectedColor.toLowerCase()
+      )
+    );
+    if (matchingVariant?.node.image) {
+      return {
+        primary: matchingVariant.node.image,
+        secondary
+      };
+    }
+    return { primary: firstImage, secondary };
+  };
+  
+  const currentImages = getCurrentImages();
+
   return (
     <div className="shop-product-item">
       <Link
@@ -85,18 +129,18 @@ function ProductGridItem({product, loading}) {
         className="shop-product-link"
       >
         <div className="shop-product-image-wrapper">
-          {firstImage && (
+          {currentImages.primary && (
             <img
-              src={firstImage.url}
-              alt={firstImage.altText || product.title}
+              src={currentImages.primary.url}
+              alt={currentImages.primary.altText || product.title}
               className="shop-product-image shop-product-image-primary"
-              loading={loading}
+              loading={loading || 'lazy'}
             />
           )}
-          {secondImage && (
+          {currentImages.secondary && (
             <img
-              src={secondImage.url}
-              alt={secondImage.altText || product.title}
+              src={currentImages.secondary.url}
+              alt={currentImages.secondary.altText || product.title}
               className="shop-product-image shop-product-image-secondary"
               loading="lazy"
             />
@@ -112,9 +156,14 @@ function ProductGridItem({product, loading}) {
               {colorOption.values.map((color) => (
                 <div
                   key={color}
-                  className="color-swatch"
+                  className={`color-swatch ${selectedColor === color ? 'color-swatch-active' : ''}`}
                   style={{backgroundColor: color.toLowerCase()}}
                   title={color}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSelectedColor(color);
+                  }}
                 />
               ))}
             </div>
@@ -128,7 +177,11 @@ function ProductGridItem({product, loading}) {
         <div className="shop-product-right">
           {/* Price */}
           <p className="shop-product-price">
-            {parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)} {product.priceRange.minVariantPrice.currencyCode}
+            {parseFloat(product.priceRange.minVariantPrice.amount).toFixed(2)}
+            {product.priceRange.minVariantPrice.amount !== product.priceRange.maxVariantPrice.amount && (
+              <> - {parseFloat(product.priceRange.maxVariantPrice.amount).toFixed(2)}</>
+            )}
+            {' '}{product.priceRange.minVariantPrice.currencyCode}
           </p>
           {/* Add to cart button */}
           <button className="shop-add-to-cart">DO KOSZYKA</button>
@@ -148,10 +201,33 @@ const ALL_PRODUCTS_QUERY = `#graphql
         amount
         currencyCode
       }
+      maxVariantPrice {
+        amount
+        currencyCode
+      }
     }
     options {
       name
       values
+    }
+    variants(first: 10) {
+      edges {
+        node {
+          id
+          title
+          selectedOptions {
+            name
+            value
+          }
+          image {
+            id
+            url
+            altText
+            width
+            height
+          }
+        }
+      }
     }
     images(first: 2) {
       edges {

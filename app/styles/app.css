@@ -1,3 +1,6 @@
+.header.header-product {
+  background: rgb(255, 255, 255) !important;
+}
 /* Custom font face declaration for FragmentMono-Regular */
 @font-face {
   font-family: 'FragmentMono';
@@ -196,7 +199,7 @@ button.reset:hover:not(:has(> *)) {
 */
 .header {
   align-items: center;
-  background: transparent;
+  background: #fff;
   display: flex;
   justify-content: space-between;
   height: calc(var(--header-height) * 1.05); /* Scale header height by 5% */
@@ -208,6 +211,8 @@ button.reset:hover:not(:has(> *)) {
   width: 100% !important;
   z-index: 9999 !important; /* Above everything */
   color: white; /* White text for header */
+  box-shadow: none !important;
+  border-top: none !important;
 }
 
 /* Homepage specific header - positioned over hero image */
@@ -246,10 +251,7 @@ body:has([data-route="homepage"]) .header:not([data-page="product"]) {
 }
 
 /* Product page header styling */
-.header-product {
-  background: white !important;
-  color: black;
-}
+
 
 .header-product * {
   color: black !important;
@@ -269,15 +271,7 @@ body:has([data-route="homepage"]) .header:not([data-page="product"]) {
 }
 
 /* Product page header positioning */
-.header[data-page="product"] {
-  position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  width: 100% !important;
-  z-index: 999 !important;
-  background: transparent !important;
-}
+
 
 /* Ensure product page header always stays on top */
 header.header-product {
@@ -315,6 +309,25 @@ header.header-product {
   transition: transform 0.2s ease;
 }
 
+/* Make dropdown arrow always black except on homepage before scroll */
+.header .dropdown-arrow,
+.header.header-about .dropdown-arrow,
+.header.header-collections .dropdown-arrow,
+.header.header-product .dropdown-arrow,
+.header.header-contact .dropdown-arrow,
+.header.header-about.header-scrolled .dropdown-arrow,
+.header.header-collections.header-scrolled .dropdown-arrow,
+.header.header-product.header-scrolled .dropdown-arrow,
+.header.header-contact.header-scrolled .dropdown-arrow {
+  color: #000 !important;
+  filter: none !important;
+}
+
+/* Exception: homepage before scroll (keep white) */
+body:has([data-route="homepage"]) .header:not(.header-scrolled) .dropdown-arrow {
+  color: #fff !important;
+}
+
 .dropdown-arrow:hover {
   transform: translateY(2px);
 }
@@ -327,8 +340,9 @@ header.header-product {
   background: white;
   border: 1px solid #e0e0e0;
   border-radius: 0;
-  min-width: 200px;
-  padding: 0.5rem 0;
+  min-width: 260px;
+  max-width: 320px;
+  padding: 1.2rem 0.25rem 0.7rem 0.25rem; /* more top padding for easier hover */
   margin-top: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 1000;
@@ -337,11 +351,13 @@ header.header-product {
 /* Dropdown items */
 .dropdown-item {
   display: block;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 1rem;
   color: var(--color-dark) !important;
   text-decoration: none;
   font-family: 'FragmentMono', monospace;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
   transition: background-color 0.2s ease;
 }
 
@@ -783,6 +799,9 @@ body:not(:has([data-route="homepage"])) main {
 
 .product-image {
   width: 100%;
+  padding-top: 5rem;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .product-image img {
@@ -794,10 +813,11 @@ body:not(:has([data-route="homepage"])) main {
 
 @media (min-width: 45em) {
   .product-image {
-    /* Match gallery item width exactly */
-    /* Gallery container width = 100vw - 4rem (padding) */
-    /* Each gallery item = (container - gap) / 2 */
-    width: calc(((100vw - 4rem - 4rem) / 2));
+    width: 80%;
+    max-width: none;
+    padding-top: 2rem;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
@@ -1837,11 +1857,11 @@ body:has(.regulamin-page) .language-toggle {
   flex-direction: column;
   background: white;
   padding: 0;
-  transition: transform 0.2s ease;
-}
-
-.shop-product-item:hover {
-  transform: translateY(-2px);
+  border-radius: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  transform: scale(0.9);
+  transform-origin: top center;
 }
 
 .shop-product-link {
@@ -1852,10 +1872,10 @@ body:has(.regulamin-page) .language-toggle {
 .shop-product-image-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 2 / 3;
   overflow: hidden;
   background-color: white;
-  margin-bottom: 1rem;
+  border-radius: 0;
 }
 
 .shop-product-image {
@@ -1867,6 +1887,7 @@ body:has(.regulamin-page) .language-toggle {
   top: 0;
   left: 0;
   transition: opacity 0.3s ease;
+  border-radius: 0;
 }
 
 .shop-product-image-primary {
@@ -1894,6 +1915,16 @@ body:has(.regulamin-page) .language-toggle {
   align-items: flex-end;
   padding: 1rem;
   background: transparent;
+  transition: all 0.3s ease;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.shop-product-item:hover .shop-product-details {
+  background: transparent;
 }
 
 .shop-product-left {
@@ -1920,7 +1951,7 @@ body:has(.regulamin-page) .language-toggle {
 .color-swatch {
   width: 20px;
   height: 20px;
-  border-radius: 50%;
+  border-radius: 0;
   border: 1px solid #e0e0e0;
   cursor: pointer;
   transition: transform 0.2s ease;
@@ -1928,6 +1959,11 @@ body:has(.regulamin-page) .language-toggle {
 
 .color-swatch:hover {
   transform: scale(1.2);
+}
+
+.color-swatch-active {
+  border: 2px solid #000;
+  transform: scale(1.15);
 }
 
 /* Product title */
@@ -1955,20 +1991,21 @@ body:has(.regulamin-page) .language-toggle {
 
 /* Add to cart button */
 .shop-add-to-cart {
-  background: var(--color-dark);
-  color: white;
+  background: transparent;
+  color: #999;
   border: none;
-  padding: 0.5rem 1rem;
+  padding: 0;
   font-family: 'FragmentMono', monospace;
   font-size: 0.75rem;
   font-weight: 400;
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: all 0.2s ease;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 .shop-add-to-cart:hover {
-  opacity: 0.8;
+  text-decoration: underline;
 }
 
 /* Responsive Design */
@@ -2546,4 +2583,28 @@ body header.header-product {
   width: 100% !important;
   z-index: 9999 !important;
   transform: translateZ(0) !important;
+}
+
+/* On collections pages, always use the scrolled header style (black text, white background) even before scroll */
+body:has([data-route*="collections"]) .header,
+body:has([data-route*="collections"]) .header * {
+  background: #fff !important;
+  color: #000 !important;
+}
+
+/* Force black header font on collections pages, even before scroll, with highest specificity */
+.header.header-collections,
+.header.header-collections * {
+  color: #000 !important;
+}
+
+body:has([data-route*="collections"]) .header,
+body:has([data-route*="collections"]) .header * {
+  color: #000 !important;
+}
+
+/* Always force black header font on collections pages, even before scroll */
+.header.header-collections,
+.header.header-collections * {
+  color: #000 !important;
 }

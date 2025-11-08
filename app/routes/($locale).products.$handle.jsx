@@ -206,6 +206,7 @@ export default function Product() {
   );
 }
 
+// Move PRODUCT_VARIANT_FRAGMENT above PRODUCT_FRAGMENT and PRODUCT_QUERY to avoid ReferenceError
 const PRODUCT_VARIANT_FRAGMENT = `#graphql
   fragment ProductVariant on ProductVariant {
     availableForSale

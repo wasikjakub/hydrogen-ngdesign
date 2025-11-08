@@ -2,7 +2,7 @@ import {redirect, useLoaderData} from 'react-router';
 import {getPaginationVariables, Analytics} from '@shopify/hydrogen';
 import {PaginatedResourceSection} from '~/components/PaginatedResourceSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
-import {ProductItem} from '~/components/ProductItem';
+import {ProductGridItem} from '../components/ProductGridItem.jsx';
 
 /**
  * @type {Route.MetaFunction}
@@ -75,22 +75,18 @@ export default function Collection() {
   /** @type {LoaderReturnData} */
   const {collection} = useLoaderData();
 
+  // Use nodes instead of edges for products
   return (
     <div className="collection">
-      <h1>{collection.title}</h1>
-      <p className="collection-description">{collection.description}</p>
-      <PaginatedResourceSection
-        connection={collection.products}
-        resourcesClassName="products-grid"
-      >
-        {({node: product, index}) => (
-          <ProductItem
+      <div className="shop-products-grid">
+        {collection.products.nodes.map((product, index) => (
+          <ProductGridItem
             key={product.id}
             product={product}
             loading={index < 8 ? 'eager' : undefined}
           />
-        )}
-      </PaginatedResourceSection>
+        ))}
+      </div>
       <Analytics.CollectionView
         data={{
           collection: {
