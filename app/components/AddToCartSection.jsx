@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {AddToCartButton} from './AddToCartButton';
 import {useAside} from './Aside';
+import '../styles/AddToCartSection.css';
 
 /**
  * @param {{
@@ -16,15 +17,8 @@ export function AddToCartSection({selectedVariant}) {
       <div className="add-to-cart-row">
         {/* Quantity Selector */}
         <div className="product-quantity">
-          <label htmlFor="quantity">Ilość:</label>
+          <label htmlFor="quantity" className="product-quantity-label">Ilość:</label>
           <div className="quantity-selector">
-            <button
-              type="button"
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
-              aria-label="Decrease quantity"
-            >
-              −
-            </button>
             <input
               id="quantity"
               type="number"
@@ -32,35 +26,49 @@ export function AddToCartSection({selectedVariant}) {
               value={quantity}
               onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
             />
-            <button
-              type="button"
-              onClick={() => setQuantity(quantity + 1)}
-              aria-label="Increase quantity"
-            >
-              +
-            </button>
+            <div className="quantity-arrows">
+              <button
+                type="button"
+                onClick={() => setQuantity(quantity + 1)}
+                aria-label="Increase quantity"
+              >
+                <span>&#9650;</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                aria-label="Decrease quantity"
+              >
+                <span>&#9660;</span>
+              </button>
+            </div>
           </div>
         </div>
-        
-        <AddToCartButton
-          disabled={!selectedVariant || !selectedVariant.availableForSale}
-          onClick={() => {
-            open('cart');
-          }}
-          lines={
-            selectedVariant
-              ? [
-                  {
-                    merchandiseId: selectedVariant.id,
-                    quantity,
-                    selectedVariant,
-                  },
-                ]
-              : []
-          }
-        >
-          {selectedVariant?.availableForSale ? 'Dodaj do koszyka' : 'Sold out'}
-        </AddToCartButton>
+        <div style={{marginLeft: '1.5rem'}}>
+          <AddToCartButton
+            disabled={!selectedVariant || !selectedVariant.availableForSale}
+            onClick={() => {
+              open('cart');
+            }}
+            lines={
+              selectedVariant
+                ? [
+                    {
+                      merchandiseId: selectedVariant.id,
+                      quantity,
+                      selectedVariant,
+                    },
+                  ]
+                : []
+            }
+            className="add-to-cart-btn-custom"
+          >
+            {selectedVariant?.availableForSale ? 'Dodaj do koszyka' : 'Sold out'}
+          </AddToCartButton>
+        </div>
+      </div>
+      <div className="shipping-info-grey">
+        Wysyłka w 20-40 dni roboczych
       </div>
     </div>
   );

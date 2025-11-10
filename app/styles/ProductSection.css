@@ -1,0 +1,35 @@
+.opis-color-block {
+  padding-top: 1.2em;
+  font-size: 0.8rem;
+}
+.opis-color-label {
+  font-weight: normal;
+}
+.opis-color-value {
+  font-size: 0.8rem;
+}
+.product-section.product-section-opis p {
+  font-size: 0.9rem;
+}
+.opis-material-block {
+  padding-top: 1.2em;
+  font-size: 0.8rem;
+}
+.opis-material-label {
+  font-weight: normal;
+}
+.opis-material-value {
+  font-size: 0.8rem;
+}
+.product-section.product-section-opis {
+  font-size: 0.8rem !important;
+  padding-top: 1.2em;
+}
+
+.product-section-material,
+.product-section-wymiary,
+.product-section-personalizacja,
+.product-section-uwagi {
+  font-size: 0.95rem;
+  color: #555;
+}

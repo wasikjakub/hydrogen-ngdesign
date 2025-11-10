@@ -1,4 +1,4 @@
-import {useLoaderData, useRouteLoaderData} from 'react-router';
+import {useLoaderData} from 'react-router';
 import {
   getSelectedProductOptions,
   Analytics,
@@ -10,9 +10,11 @@ import {
 import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
-import {ProductDescription} from '~/components/ProductDescription';
+// import {ProductDescription} from '~/components/ProductDescription';
 import {AddToCartSection} from '~/components/AddToCartSection';
 import {redirectIfHandleIsLocalized} from '~/lib/redirect';
+import {parseDescription} from '~/lib/parseDescription';
+import '~/styles/ProductSection.css';
 
 /**
  * @type {Route.MetaFunction}
@@ -88,8 +90,8 @@ function loadDeferredData() {
 export default function Product() {
   /** @type {LoaderReturnData} */
   const {product} = useLoaderData();
-  const rootData = useRouteLoaderData('root');
-  const language = rootData?.selectedLocale?.language || 'EN';
+  // const rootData = useRouteLoaderData('root');
+  // const language = rootData?.selectedLocale?.language || 'EN';
 
   // Optimistically selects a variant with given available variant information
   const selectedVariant = useOptimisticVariant(
@@ -108,6 +110,8 @@ export default function Product() {
   });
 
   const {title, descriptionHtml} = product;
+  // Parse description into sections
+  const descriptionSections = parseDescription(descriptionHtml);
 
   // Get all media images for the gallery, excluding the main variant image
   const galleryImages = product.media?.nodes?.filter(
@@ -125,52 +129,107 @@ export default function Product() {
               price={selectedVariant?.price}
               compareAtPrice={selectedVariant?.compareAtPrice}
             />
+            {/* Opis (description) section directly under price */}
+            {descriptionSections["Opis"] && (
+              <div className="product-section product-section-opis">
+                <p>{descriptionSections["Opis"]}</p>
+                {descriptionSections["Materiał"] && (
+                  <div className="opis-material-block">
+                    <span className="opis-material-label">Materiał:</span>
+                    <br />
+                    <span className="opis-material-value">{descriptionSections["Materiał"]}</span>
+                  </div>
+                )}
+                {/* Render Kolor from Shopify product options, not from descriptionSections */}
+                {(() => {
+                  // Find the color option in productOptions
+                  const colorOption = productOptions.find(
+                    (opt) => opt.name.toLowerCase() === 'kolor' || opt.name.toLowerCase() === 'color'
+                  );
+                  // Find the selected color value
+                  const selectedColor = colorOption?.optionValues.find((v) => v.selected)?.name;
+                  if (colorOption) {
+                    return (
+                      <div className="opis-color-block">
+                        <span className="opis-color-label">Kolor:</span>
+                        <br />
+                        <div style={{display: 'flex', alignItems: 'center', marginTop: '0.5em', gap: '1em'}}>
+                          {colorOption.optionValues.map((v, idx) => {
+                            const isSelected = v.selected;
+                            if (isSelected) {
+                              return (
+                                <span
+                                  key={v.name}
+                                  style={{
+                                    fontWeight: 600,
+                                    textDecoration: 'underline',
+                                    cursor: 'default',
+                                    color: '#222',
+                                  }}
+                                >
+                                  {v.name}
+                                </span>
+                              );
+                            } else {
+                              return (
+                                <a
+                                  key={v.name}
+                                  href={`?${v.variantUriQuery}`}
+                                  style={{
+                                    fontWeight: 400,
+                                    textDecoration: 'none',
+                                    color: '#666',
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  {v.name}
+                                </a>
+                              );
+                            }
+                          })}
+                        </div>
+                      </div>
+                    );
+                  }
+                  return null;
+                })()}
+              </div>
+            )}
             <br />
-            
             {/* Product options (variants) - WITHOUT add to cart */}
             <ProductForm
               productOptions={productOptions}
             />
-            
             {/* Quantity and Add to Cart - AT THE TOP */}
             <AddToCartSection selectedVariant={selectedVariant} />
           </div>
-          
           <div className="product-description-section-wrapper">
-            {/* Description */}
-            <ProductDescription 
-              descriptionHtml={descriptionHtml} 
-              language={language}
-              sections={['opis']}
-            />
-            
-            {/* Material */}
-            <ProductDescription 
-              descriptionHtml={descriptionHtml} 
-              language={language}
-              sections={['material']}
-            />
-            
-            {/* Color */}
-            <ProductDescription 
-              descriptionHtml={descriptionHtml} 
-              language={language}
-              sections={['kolor']}
-            />
-            
-            {/* Dimensions */}
-            <ProductDescription 
-              descriptionHtml={descriptionHtml} 
-              language={language}
-              sections={['wymiary']}
-            />
-            
-            {/* Personalization and Notes */}
-            <ProductDescription 
-              descriptionHtml={descriptionHtml} 
-              language={language}
-              sections={['personalizacja', 'uwagi']}
-            />
+            {/* Render parsed description sections consistently (excluding Opis and duplicate Materiał) */}
+            {descriptionSections["Wymiary"] && (
+              <div className="product-section product-section-wymiary">
+                <h4 style={{color: '#111', marginBottom: '0.5em'}}>Wymiary</h4>
+                <div style={{color: '#888', fontSize: '0.92em', lineHeight: 1.7, whiteSpace: 'pre-line'}}>
+                  {String(descriptionSections["Wymiary"]).replace(/cm(?!\w)/g, 'cm\n')}
+                </div>
+              </div>
+            )}
+            {descriptionSections["Personalizacja"] && (
+              <div className="product-section product-section-personalizacja">
+                <h4 style={{color: '#111', marginBottom: '0.5em'}}>Personalizacja</h4>
+                <div style={{color: '#888', fontSize: '0.92em', lineHeight: 1.7, whiteSpace: 'pre-line'}}>
+                  {String(descriptionSections["Personalizacja"])}
+                </div>
+              </div>
+            )}
+            {descriptionSections["Uwagi"] && (
+              <div className="product-section product-section-uwagi">
+                <h4 style={{color: '#111', marginBottom: '0.5em'}}>Uwagi</h4>
+                <div style={{color: '#888', fontSize: '0.92em', lineHeight: 1.7, whiteSpace: 'pre-line'}}>
+                  {String(descriptionSections["Uwagi"])}
+                </div>
+              </div>
+            )}
+            {/* Do NOT render Kolor/Color from descriptionSections to avoid duplicate */}
           </div>
         </div>
         <Analytics.ProductView

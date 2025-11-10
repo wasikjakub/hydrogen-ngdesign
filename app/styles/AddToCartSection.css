@@ -1,0 +1,81 @@
+.add-to-cart-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 420px;
+  max-width: 100%;
+}
+
+.quantity-selector {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+}
+
+.quantity-selector input {
+  margin-right: 0;
+  height: 2.5rem;
+  width: 3.5rem;
+  text-align: center;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  color: #999;
+}
+
+.quantity-arrows {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: 2.5rem;
+}
+
+.quantity-arrows button {
+  padding: 0;
+  border: none;
+  background: none;
+  height: 1.2em;
+  width: 1.5em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quantity-arrows button span {
+  font-size: 0.9em;
+  line-height: 1;
+  color: #888;
+}
+
+
+.add-to-cart-btn-custom {
+  background: none;
+  color: #888;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 1rem;
+  width: 10rem;
+  text-align: center;
+  box-shadow: none;
+  transition: text-decoration 0.2s;
+  margin-left: 0;
+  cursor: pointer;
+}
+
+.shipping-info-grey {
+  color: #999;
+  font-size: 0.97rem;
+  margin-top: 1.2rem;
+}
+
+.add-to-cart-btn-custom:hover {
+  text-decoration: underline;
+}
+
+.product-quantity label,
+.product-quantity-label {
+  font-size: 0.95rem;
+  color: #999;
+}
